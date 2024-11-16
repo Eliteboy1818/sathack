@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Study Assistant</title>
+    <style>
+        body {
+            width: 350px;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2, h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+
+        .panel {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .video-info {
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .video-info.active {
+            display: block;
+        }
+
+        #videoTitle {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .recommendation {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .recommendation.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .recommendation.neutral {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .recommendation.warning {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .score-label {
+            margin-right: 10px;
+            color: #666;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        #analyzeBtn {
+            background: #007bff;
+            color: white;
+        }
+
+        #analyzeBtn:hover {
+            background: #0056b3;
+        }
+
+        #startBtn {
+            background: #28a745;
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: #218838;
+        }
+
+        #stopBtn {
+            background: #dc3545;
+            color: white;
+            display: none;
+        }
+
+        #stopBtn:hover {
+            background: #c82333;
+        }
+
+        /* Break Settings Styles */
+        .settings-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .setting-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .setting-item label {
+            margin-right: 10px;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .setting-item select,
+        .setting-item input {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 120px;
+            font-size: 14px;
+        }
+
+        .setting-item select:focus,
+        .setting-item input:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        .settings-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .settings-button:hover {
+            background: #0056b3;
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .alert-info {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .divider {
+            height: 1px;
+            background: #dee2e6;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel" id="setupPanel">
+            <h2>Smart Study Assistant</h2>
+            <button id="analyzeBtn">Analyze Playlist</button>
+        </div>
+
+        <div class="video-info">
+            <div id="videoTitle"></div>
+            <div class="score-container">
+                <span class="score-label">Educational Score:</span>
+                <span class="score" id="focusScore">0%</span>
+            </div>
+            <div id="aiRecommendation" class="recommendation"></div>
+        </div>
+
+        <div class="panel" id="monitoringPanel" style="display: none;">
+            <div class="time-display">
+                Study Time: <span id="studyTime">0:00</span>
+            </div>
+            <button id="startBtn">Start Monitoring</button>
+            <button id="stopBtn">Stop Monitoring</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="settings-panel" id="breakSettings">
+            <h3>Break Settings</h3>
+            <div class="setting-item">
+                <label for="breakInterval">Study Interval:</label>
+                <select id="breakInterval">
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="90">1.5 hours</option>
+                    <option value="120">2 hours</option>
+                    <option value="180" selected>3 hours</option>
+                    <option value="240">4 hours</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="setting-item" id="customIntervalInput" style="display: block;">
+                <label for="customMinutes">Custom Minutes:</label>
+                <input  placeholder="Custom" type="number" id="customMinutes" min="1" max="480" value="180">
+            </div>
+            <div class="setting-item">
+                <label for="breakDuration">Break Duration:</label>
+                <select id="breakDuration">
+                    <option value="5">5 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="15" selected>15 minutes</option>
+                    <option value="20">20 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="setting-item" id="customDurationInput" style="display: none;">
+                <label for="customBreakMinutes">Custom Minutes:</label>
+                <input type="number" id="customBreakMinutes" min="1" max="60" value="15">
+            </div>
+            <button id="saveSettings" class="settings-button">Save Settings</button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
